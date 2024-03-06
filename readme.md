@@ -1,3 +1,3 @@
 # EXPENSE TRACKER
 
-## A personall account web application
+## A personal accounting web application
