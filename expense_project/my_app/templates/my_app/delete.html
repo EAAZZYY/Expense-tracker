@@ -1,0 +1,14 @@
+{% extends 'my_app/base.html' %} {% block content %}
+
+<form method="POST" class="flex mt-10">
+  {% csrf_token %}
+  <h1>ARE YOU SURE YOU WANT TO DELETE THIS?</h1>
+
+  <button
+    class="bg-red-500 ml-10 px-5 py-2 rounded-lg text-white font-bold"
+    type="submit"
+  >
+    Delete
+  </button>
+</form>
+{% endblock %}

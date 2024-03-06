@@ -1,0 +1,272 @@
+{% extends 'my_app/base.html' %} {% load humanize %} {% block content %}
+
+<div>
+  <form method="POST" class="shadow-lg m-10 rounded-lg">
+    {% csrf_token %}
+    <div class="flex form-container px-10 py-10">
+      <div class="mx-10">
+        <div class="mb-5">
+          <label>Bought</label>
+        </div>
+        <div class="border">{{ form.bought }}</div>
+      </div>
+      <div class="mx-10">
+        <div class="mb-5">
+          <label>Amount</label>
+        </div>
+        <div class="border">{{ form.amount }}</div>
+      </div>
+      <div class="mx-10">
+        <div class="mb-5">
+          <label>Category</label>
+        </div>
+        <div class="border">{{ form.category }}</div>
+      </div>
+      <div class="mt-6 mx-10">
+        <button
+          class="bg-green-500 px-5 py-2 rounded-lg text-white font-bold"
+          type="submit"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <table
+    class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+  >
+    <thead
+      class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+    >
+      <tr>
+        <th scope="col" class="px-6 py-3">Purchase</th>
+        <th scope="col" class="px-6 py-3">Amount</th>
+        <th scope="col" class="px-6 py-3">Category</th>
+        <th scope="col" class="px-6 py-3">Date</th>
+        <th scope="col" class="px-6 py-3">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for expense in expense %}
+      <tr
+        class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+      >
+        <th
+          scope="row"
+          class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+        >
+          {{expense.bought}}
+        </th>
+        <td class="px-6 py-4">#{{expense.amount | intcomma }}</td>
+        <td class="px-6 py-4">{{expense.category}}</td>
+        <td class="px-6 py-4">{{expense.date}}</td>
+        <td class="px-6 py-4">
+          <a
+            href="{% url 'edit' expense.id %}"
+            class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            >Edit</a
+          >
+          |
+          <a
+            href="{% url 'delete' expense.id %}"
+            class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            >Delete</a
+          >
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="px-6 py-4 even:dark:bg-gray-800 text-white font-bold">
+    <h3>Total Spent: #{{total_expense.amount__sum | intcomma }}</h3>
+  </div>
+  <div class="flex my-10">
+    <div
+      class="mx-10 w-1/3 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+    >
+      <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
+        TOTAL SPEND 365 DAYS
+      </h5>
+      <h1
+        class="text-center mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        #{{yearly_sum.amount__sum | intcomma}}
+      </h1>
+    </div>
+    <div
+      class="mx-10 w-1/3 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+    >
+      <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
+        TOTAL SPEND 30 DAYS
+      </h5>
+      <h1
+        class="text-center mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        #{{monthly_sum.amount__sum | intcomma}}
+      </h1>
+    </div>
+    <div
+      class="mx-10 w-1/3 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+    >
+      <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
+        TOTAL SPEND 7 DAYS
+      </h5>
+      <h1
+        class="text-center mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        #{{weekly_sum.amount__sum | intcomma}}
+      </h1>
+    </div>
+  </div>
+</div>
+<div class="flex my-10">
+  <div
+    id="30-days"
+    class="m-10 w-1/2 block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+  >
+    <h5
+      class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white text-center"
+    >
+      PAST 30 DAYS EXPENSES
+    </h5>
+    {% for daily in daily %}
+    <div class="flex flex-wrap py-5">
+      <h5 class="mb-2 font-bold tracking-tight text-green-500">
+        {{daily.date}}
+      </h5>
+    </div>
+    <div class="flex flex-wrap">
+      <h1
+        class="text-center mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        #{{ daily.sum }}
+      </h1>
+    </div>
+    {% endfor %}
+  </div>
+  <div
+    id="category"
+    class="m-10 w-1/2 block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+  >
+    <h5
+      class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white text-center"
+    >
+      CATEGORICAL EXPENSES
+    </h5>
+    {% for category in category %}
+    <div class="flex flex-wrap py-5">
+      <h5 class="mb-2 font-bold tracking-tight text-green-500">
+        {{category.category}}
+      </h5>
+    </div>
+    <div class="flex flex-wrap">
+      <h1
+        class="text-center mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        #{{ category.sum}}
+      </h1>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="flex">
+  <div class="w-1/2 shadow-lg ml-10">
+    <h1 class="text-center mb-2 text-2xl font-bold tracking-tight text-red-500">
+      Past 30 Days Expenses Chart
+    </h1>
+    <canvas id="Chart"></canvas>
+  </div>
+  <div class="w-1/2 shadow-lg ml-10">
+    <h1 class="text-center mb-2 text-2xl font-bold tracking-tight text-red-500">
+      Categorical Expenses Chart
+    </h1>
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+  const cats = [];
+  const catsAmount = [];
+  const category = document
+    .getElementById("category")
+    .getElementsByTagName("div");
+
+  for (i = 0; i < category.length; i++) {
+    if (i % 2 == 1) {
+      catsAmount.push(category[i].innerText.replace("#", ""));
+    } else {
+      cats.push(category[i].innerText);
+    }
+  }
+  const ctx = document.getElementById("myChart");
+
+  new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: cats,
+      datasets: [
+        {
+          label: "Categorical Spending",
+          data: catsAmount,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+</script>
+
+<!-- 30 days Chart -->
+<script>
+  const ctxe = document.getElementById("Chart");
+
+  const days = [];
+  const daysAmount = [];
+  const day = document.getElementById("30-days").getElementsByTagName("div");
+  console.log(day);
+  for (j = 0; j < day.length; j++) {
+    if (j % 2 == 1) {
+      daysAmount.push(day[j].innerText.replace("#", ""));
+    } else {
+      days.push(day[j].innerText);
+    }
+  }
+  console.log(days);
+  console.log(daysAmount);
+  new Chart(ctxe, {
+    type: "line",
+    data: {
+      labels: days,
+      datasets: [
+        {
+          label: "PAST 30 DAYS EXPENSES",
+          data: daysAmount,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+</script>
+
+{% endblock %}

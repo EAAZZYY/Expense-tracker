@@ -1,0 +1,36 @@
+{% extends 'my_app/base.html' %} {% block content %}
+
+<div>
+  <form method="POST" class="shadow-lg m-10 rounded-lg">
+    {% csrf_token %}
+    <div class="flex form-container px-10 py-10">
+      <div class="mx-10">
+        <div class="mb-5">
+          <label>Bought</label>
+        </div>
+        <div class="border">{{ edit_form.bought }}</div>
+      </div>
+      <div class="mx-10">
+        <div class="mb-5">
+          <label>Amount</label>
+        </div>
+        <div class="border">{{ edit_form.amount }}</div>
+      </div>
+      <div class="mx-10">
+        <div class="mb-5">
+          <label>Category</label>
+        </div>
+        <div class="border">{{ edit_form.category }}</div>
+      </div>
+      <div class="mt-6 mx-10">
+        <button
+          class="bg-green-500 px-5 py-2 rounded-lg text-white font-bold"
+          type="submit"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
